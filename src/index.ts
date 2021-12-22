@@ -1,4 +1,5 @@
-import express, { Request, Response, NextFunction} from "express";
+import express from "express";
+import statusRoute from "./routes/status.route";
 import usersRoute from "./routes/users.route";
 
 const app = express();
@@ -9,12 +10,9 @@ app.use(express.urlencoded({ extended: true}));
 
 //Configurar as rotas
 app.use(usersRoute);
-
-app.get('/status', (req: Request, res: Response, next:NextFunction) =>{
-    res.status(200).send({ foo: 'Sucesso !'})    
-})
+app.use(statusRoute);
 
 // Inicialização do servidor
 app.listen(3000, () =>{
-    console.log('Aplicação sendo executada na http://localhost:3000')
+    console.log('Aplicação sendo executada em http://localhost:3000')
 })
