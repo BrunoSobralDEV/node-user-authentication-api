@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import ForbiddenError from "../models/errors/forbidden.error.model";
 import userRepository from "../repositories/user.repository";
 
+//Middleware para reutilizar as funções de autenticação
 async function basicAuthenticationMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
       //Pegar o conteúdo do headers-authorizations
