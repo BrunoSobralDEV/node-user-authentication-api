@@ -1,47 +1,35 @@
 import { NextFunction, Request, Response, Router } from "express";
-import ForbiddenError from "../models/errors/forbidden.error.model";
-import userRepository from "../repositories/user.repository";
+import { StatusCodes } from "http-status-codes";
 import JWT from "jsonwebtoken";
+import basicAuthenticationMiddleware from "../middlewares/basic-authentication.middleware";
+import ForbiddenError from "../models/errors/forbidden.error.model";
 
 const authorizationRoute = Router();
 
-authorizationRoute.post('/token', async (req: Request, res: Response, next: NextFunction) => {
+//endpoint com método de autenticação BasicHTTP
+authorizationRoute.post(
+  "/token",
+  basicAuthenticationMiddleware,
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      //Pegar o conteúdo do headers-authorizations
-      const authorizationHeader = req.headers["authorization"];
-
-      //Verificar se ele existe
-      if (!authorizationHeader) {
-        throw new ForbiddenError("Credenciais não informadas");
+      const user = req.user;
+      //basicAuthenticationMiddleware estava aqui, criei um arquivo pra poder reutilizá-lo
+      if (!user) {
+        throw new ForbiddenError("Usuário não informado!");
       }
 
-      // Basic YWRtaW46YWRtaW4=
-      const [authenticationType, token] = authorizationHeader.split(" ");
+      const jwtPayload = { username: user.username };
+      const jwtOptions = { subject: user?.uuid };
+      const secretKey = "my_secret_key";
+      //gerar token
+      const jwt = JWT.sign(jwtPayload, secretKey, jwtOptions);
 
-      //Verificar se é do tipo 'Basic' e se está com o token
-      if (authenticationType !== "Basic" || !token) {
-        throw new ForbiddenError("Tipo de autenticação inválido");
-      }
-      //Decodificando o token p/ utf-8 = username:password
-      const tokenContent = Buffer.from(token, "base64").toString("utf-8");
-
-      //Separar 'username:password'
-      const [username, password] = tokenContent.split(":");
-
-      //validação antes de buscar no banco
-      if (!username || !password) {
-        throw new ForbiddenError("Credenciais não preenchidas");
-      }
-
-      //verificar no banco este usuário
-      const user = await userRepository.findByUsernameAndPassword(
-        username,
-        password
-      );
-      console.log(user);
+      //devolver o JWT, baseado no usuário
+      res.status(StatusCodes.OK).json({ token: jwt });
     } catch (error) {
-        next(error);
+      next(error);
     }
-})
+  }
+);
 
 export default authorizationRoute;

@@ -10,9 +10,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 
-//Configurar as rotas
-app.use(usersRoute);
+//Configurar as rotas - pro Express a ordem importa
 app.use(statusRoute);
+app.use(usersRoute);
 app.use(authorizationRoute);
 
 //Configuração dos Handlers de Erro
