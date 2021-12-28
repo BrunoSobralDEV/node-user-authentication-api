@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import ForbiddenError from "../models/errors/forbidden.error.model";
 import JWT from "jsonwebtoken";
-import userRepository from "../repositories/user.repository";
+//import userRepository from "../repositories/user.repository";
 
 //Busca de usuários validada por token
-async function bearerAuthenticationMiddleware(
+async function jwtAuthenticationMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
@@ -49,4 +49,4 @@ async function bearerAuthenticationMiddleware(
   }
 }
 
-export default bearerAuthenticationMiddleware;
+export default jwtAuthenticationMiddleware;
