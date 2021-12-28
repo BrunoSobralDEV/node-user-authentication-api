@@ -11,13 +11,18 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 
+
 //Configurar as rotas - pro Express a ordem importa
 app.use(statusRoute);
-app.use(jwtAuthenticationMiddleware, usersRoute);
-app.use(authorizationRoute);
+app.use(authorizationRoute); //Rota de Login
+
+app.use(jwtAuthenticationMiddleware);
+app.use(usersRoute); //Rotas de usuário
+
 
 //Configuração dos Handlers de Erro
 app.use(errorHandler);
+
 
 // Inicialização do servidor
 const PORT = 3000;

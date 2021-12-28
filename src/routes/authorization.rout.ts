@@ -33,7 +33,8 @@ authorizationRoute.post(
   }
 );
 
+//Validar token
 authorizationRoute.post('/token/validate', jwtAuthenticationMiddleware, (req: Request, res: Response, next: NextFunction) => {
-  
+  res.sendStatus(StatusCodes.OK);
 });
 export default authorizationRoute;

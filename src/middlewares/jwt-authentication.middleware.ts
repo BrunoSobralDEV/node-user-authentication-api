@@ -27,23 +27,24 @@ async function jwtAuthenticationMiddleware(
       );
     }
 
-    //Descriptografa - verifica se o token é válido e devolve o Payload do Token
-    //com base na Private Key
-    const tokenPayload = JWT.verify(token, "my_secret_key");
-
-    if (typeof tokenPayload !== "object" || !tokenPayload.sub) {
-      throw new ForbiddenError("Token Inválido");
+    try {
+      //Descriptografa - verifica se o token é válido e devolve o Payload do Token
+      //com base na Private Key
+      const tokenPayload = JWT.verify(token, "my_secret_key");
+      if (typeof tokenPayload !== "object" || !tokenPayload.sub) {
+        throw new ForbiddenError("Token Inválido");
+      }
+      //'user' quem esse token representa
+      const user = {
+        uuid: tokenPayload.sub,
+        username: tokenPayload.username,
+      };
+      //deixar o user disponível pra todo mundo que usar esse middleware
+      req.user = user;
+      next();
+    } catch (error) {
+        throw new ForbiddenError("Token Inválido");
     }
-
-    //'user' quem esse token representa
-    const user = { 
-      uuid: tokenPayload.sub, 
-      username: tokenPayload.username
-    };
-    //deixar o user disponível pra todo mundo que usar esse middleware
-    req.user = user;
-
-    next();
   } catch (error) {
     next(error);
   }
